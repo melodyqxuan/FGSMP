@@ -67,8 +67,9 @@ for i in data_f:
 
 news = pd.DataFrame({'title':titles, 'text': texts, 'time':pub_times, 'pos': pos_tag, 'dep': dep_relation})
 
-savefile = './data_text.npz'
-np.savez_compressed(savefile, data = data_f, df = news, pos = pos_tag, dep = dep_relation, title = titles, text = texts, time = pub_times)
+#savefile = './data_text.npz'
+#np.savez_compressed(savefile, data = data_f, df = news, pos = pos_tag, \
+#					dep = dep_relation, title = titles, text = texts, time = pub_times)
 
 
 SOS_token = 0
@@ -77,7 +78,7 @@ EOS_token = 1
 class BuildVocab:
 	"""Build vocabulary"""
 	def __init__(self):
-		self.word2index = {}
+		self.word2index = {'<PAD>': 0, '<SOS>': 1, '<EOS>':2}
 		self.word2count = {}
 		self.index2word = {0: '<PAD>', 1: '<SOS>', 2: '<EOS>'}
 		self.n_words = 3
