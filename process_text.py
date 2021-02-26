@@ -47,8 +47,8 @@ for i in data_f:
 		pub_times.append(i['pub_time'])
 		doc_pos = pos(i['title'])
 		doc_dep = dep(i['title'])
-		pos_tag.append(doc_pos)
-		dep_relation.append(doc_dep)
+		pos_tag.append(doc_pos.to_dict())
+		dep_relation.append(doc_dep.to_dict())
 		
 		# try:
 		# 	pos_tmp = pos_tagger.tag(i['title'].split() + i['text'].split())
