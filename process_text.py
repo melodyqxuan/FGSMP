@@ -19,6 +19,7 @@ import stanza
 f = open('dummy_news.json') #creates dictionary with key-value pairs of the JSON string
 
 data_f = json.load(f)
+data_f = sorted(data_f, key = lambda i: i['pub_time'])
 #POS Tagging
 #pos_tagger = CoreNLPParser(url='http://localhost:9000', tagtype = 'pos')
 #list(pos_tagger.tag('Sentences'))
@@ -67,7 +68,7 @@ for i in data_f:
 news = pd.DataFrame({'title':titles, 'text': texts, 'time':pub_times, 'pos': pos_tag, 'dep': dep_relation})
 
 savefile = './data_text.npz'
-np.savez_compressed(savefile, data = data_f, df = news, pos = pos_tag, dep = dep_relation)
+np.savez_compressed(savefile, data = data_f, df = news, pos = pos_tag, dep = dep_relation, title = titles, text = texts, time = pub_times)
 
 
 SOS_token = 0
