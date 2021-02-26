@@ -41,8 +41,20 @@ class SentBiLSTM(nn.Module):
 		return out
 
 class StockBiLSTM(nn.Module):
-	def __init__(self):
+	def __init__(self, stock_dim, hidden_dim = 256, num_layers = 1, bidirectional = True):
 		raise NotImplementedError
+		super(StockBiLSTM, self).__init__()
+		self.stock_dim = stock_dim
+		self.num_layers = num_layers 
+		self.bidirectional = bidirectional 
+
+		#initialize model parameters 
+		self.encoder = nn.LSTM(input_size = stock_dim, hidden_size = hidden_dim, \
+								num_layers = num_layers, bidirectional = bidirectional)
+
+	def forward(self, x, lens):
+		out , _ = self.encoder(out)
+		return out 
 
 class TensorFusion(nn.Module):
 	def __init__(self, input_dim, output_dim, activation = 'ReLU', bias = True):
@@ -296,7 +308,7 @@ class MSSPM(nn.Module):
 		self.event_enc = nn.Embedding(event_size, 2 * hidden_dim)
 
 		# TODO: implement StockBiLSTM, currently a SentBiLSTM is used instead
-		self.stock_enc = SentBiLSTM(vocab_size=vocab_size, embed_dim=word_embed_dim, hidden_dim=hidden_dim)
+		self.stock_enc = StockBiLSTM(stock_dim=stock_dim, hidden_dim=hidden_dim)
 		self.stock_attn = nn.MultiheadAttention(2 * hidden_dim, num_heads=num_heads)
 		# TODO end
 
