@@ -176,3 +176,6 @@ Model Mode | Validation Acc(%)
 mode 0 | 54.21%
 mode 1 | 51.78%
 mode 2 | 53.65%
+
+## References
+Chen, Deli, et al. "Incorporating fine-grained events in stock movement prediction." arXiv preprint arXiv:1910.05078 (2019).
