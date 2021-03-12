@@ -39,6 +39,7 @@ To summarize, the i-th sample `(x_i, y_i, e_i, s_i)` from our dataset contains t
 
 ### Data Processing 
 
+In order to fit the data to the model, further processing on both texts and trade data is required. For the trade data, aside from the 6 available features provided by our data source, we additionally compute the change of rate of the features by comparing to the last minute values. Each timestamp consists of trading data of length 10 minutes, where padding is used for time steps less than 10 minutes. For simplicity, we construct the event labels `e_i` using POS tags, as the detailed implementation of the event extraction process is not available to us. 
 
 
 
@@ -46,10 +47,13 @@ To summarize, the i-th sample `(x_i, y_i, e_i, s_i)` from our dataset contains t
 
 The methods proposed by this paper include two main components: 1) Fine-grained events extraction and 2) (M)SSPM model. 
 
+### Event Extraction 
+
+
 
 We primarily implement two models, namely **S**tructured **S**tock **P**rediction **M**odel (SSPM) and **M**ulti-task SSPM, that predicts a binary stock movement label based on historical trading data, news report, and event labels. We briefly introduce the mathematical construction of the models below. 
 
-## SSPM
+### SSPM
 
 The input data is a set of `N` tuples `{(x_i, y_i, e_i, s_i)}` for `1 <= i <= N`, where `x_i` is the news report sequence, `y_i` the stock trading history,`e_i` the event labels associated with the news report `x_i`, and `s_i` the binary stock movement label. The construction of `e_i` is analogous to that of POS tags, meaning that the sequence length of `e_i` is identical to that of `x_i`. We omit data indices for the rest of this section for clarity.
 
@@ -90,7 +94,7 @@ L_BCE = BCE(p, s)
 ```
 At test time, our model simply takes a test tuple `(x, y, e)` and predicts the movement probability `s`.
 
-## MSSPM
+### MSSPM
 
 The MSSPM model is very similar to SSPM in its processing of news sequence and stock history inputs, and differs in its treatment of the event labels.
 At training time, the MSSPM first procures the news representation
