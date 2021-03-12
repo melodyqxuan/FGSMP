@@ -1,11 +1,10 @@
-import os, time, argparse
+import os, time, argparse, json
 import tqdm
 import numpy as np
 
 import torch
 import torch.nn as nn
 from model import MSSPM
-from data_utils import build_dataset, batch_sampler
 
 parser = argparse.ArgumentParser(description='(M)SSPM training logistics')
 parser.add_argument('--train-root', default='train', type=str, help='training dataset location')
@@ -22,7 +21,59 @@ parser.add_argument('--lr', default=1e-2, type=float, help='optimizer learning r
 parser.add_argument('--weight_decay', default=0., type=float, help='weight decay')
 parser.add_argument('--bsize', default=32, type=int, help='batch size')
 parser.add_argument('--nepochs', default=50, type=int, help='number of training epochs')
+
+parser.add_argument('--evaluate', action='store_true', help='whether to perform model evaluation')
+
 args = parser.parse_args()
+
+TICKERS = os.listdir('train')
+
+def build_dataset(root):
+    with open('pos2index.json', 'r') as f:
+        pos2index = json.load(f)
+    files = [os.path.join(root, ticker, i) for ticker in TICKERS \
+             for i in os.listdir(os.path.join(root, ticker))]
+    news, stocks, pos, labels = [], [], [], []
+    for path in files:
+        with open(os.path.join(path, 'seq.json'), 'r') as f:
+            seq_label_dict = json.load(f)
+            news.append(seq_label_dict['text'])
+            pos.append([pos2index[p] for p in seq_label_dict['pos']])
+            assert len(pos[-1]) == len(news[-1])
+            labels.append(seq_label_dict['tgt'])
+        stocks.append(np.load(os.path.join(path, 'stock.npy')))
+    news = np.array(news, dtype = object)
+    stocks = np.array(stocks, dtype = object)
+    pos = np.array(pos, dtype = object)
+    labels = np.array(labels, dtype = np.int)
+    return news, stocks, pos, labels
+
+def batch_sampler(idx, news, stocks, pos, labels):
+
+    def pad_sequence(seq_list):
+        out = []
+        seq_lens = [len(seq) for seq in seq_list]
+        max_length = max(seq_lens)
+        if isinstance(seq_list[0], list):
+            seq_shape = (max_length,)
+        else:
+            seq_shape = (max_length, seq_list[0].shape[-1])
+
+        for i, seq_i in enumerate(seq_list):
+            seq = torch.zeros(seq_shape)
+            seq[:len(seq_i)] = torch.Tensor(seq_i)
+            out.append(seq)
+
+        out = torch.stack(out).to(torch.float32)
+        return out, seq_lens
+
+    stocks_out, stock_lens = pad_sequence(list(stocks[idx]))
+    pos_out, pos_lens = pad_sequence(list(pos[idx]))
+    pos_out = pos_out.to(torch.long)
+    dict_out = {'news': list(news[idx]), 'sent_lens': pos_lens, \
+                'stocks': stocks_out, 'stock_lens': stock_lens, \
+                'pos': pos_out, 'labels': torch.from_numpy(labels[idx]).to(torch.float32)}
+    return dict_out
 
 news_train, stocks_train, pos_train, labels_train = build_dataset(args.train_root)
 news_valid, stocks_valid, pos_valid, labels_valid = build_dataset(args.valid_root)
@@ -34,7 +85,6 @@ model = MSSPM(args.hidden_dim, args.sent_encoder_layers, args.stock_encoder_laye
               args.num_heads, args.dropout, args.mode, event_size = event_size)
 num_params = sum(p.numel() for p in model.parameters())
 print('Number of Parameters: {}'.format(num_params))
-model = model.cuda()
 criterion = nn.BCELoss()
 optimizer = torch.optim.SGD(model.parameters(), lr = args.lr, weight_decay = args.weight_decay)
 
@@ -84,7 +134,22 @@ def evaluate(curr_epoch, model):
         num_total += labels.size(0)
         minibatch_iter.set_postfix(acc = num_correct / labels.size(0))
     print('Acc. on test set: {:.3f}'.format(correct_total / num_total))
+    return correct_total / num_total
 
-for e in range(args.nepochs):
-    train_epoch(e, model, criterion, optimizer)
-    evaluate(e, model)
+if not args.evaluate:
+    model = model.cuda()
+    prev_best = 0.
+    for e in range(args.nepochs):
+        train_epoch(e, model, criterion, optimizer)
+        evaluate(e, model)
+        if valid_acc > prev_best:
+            print('Saving...')
+            state = {'net': net.state_dict(), 'acc': valid_acc, 'epoch': e}
+            if not os.path.isdir('checkpoint'):
+                os.mkdir('checkpoint')
+            torch.save(state, './checkpoint/ckpt.pth')
+else:
+    checkpoint = torch.load('./checkpoint/ckpt.pth')
+    model.load_state_dict(checkpoint['net'])
+    model = model.cuda()
+    evaluate(-1, model)
