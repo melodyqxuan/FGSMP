@@ -133,3 +133,44 @@ Instead of performing gradient descent over the binary cross entropy loss, the M
 (1 - eta) L_CRF + eta L_BCE
 ```
 where `0 < eta < 1` is a training hyperparameter.
+
+## Reproducibility
+
+The full model (with event label CRF and large model specification) is trained on an AWS p3.8xlarge instance, totaling over 100 million parameters. We provide code snippet for executing a smaller model for the purpose of this report.
+
+### Prerequisites
+```
+Python > 3.6
+torch > 1.5
+allennlp
+nltk
+tqdm
+```
+### Building dataset
+To build dataset from scratch (i.e. `historical_price/` and `news.json`), simply execute 
+```
+python data_utils.py --build-train-valid --build-pos
+```
+in which the `--build-train-valid` flag builds the training and validation datasets with a 7:3 split, and `--build-pos` creates dictionary mappings between POS tagging and indices. We provide these mappings in `pos2index.json` and `index2pos.json` in this repository. Processing the dataset takes ~40min on a 32-core Desktop.
+
+### How to train the model
+We provide three modes for model training, which can be specified by the flag `--mode` in `main.py`. If `mode == 0`, we train the SSPM model without event (POS) labels; if `mode == 1`, we train the SSPM model with event labels, as described by the paper; if `mode == 2`, we train the MSSPM model with CRF-augmented loss.
+
+To train with each mode respectively, simply execute
+```
+python main.py --mode 0 --hidden-dim 128 --sent-encoder-layers 1 --stock-encoder-layers 1
+python main.py --mode 1 --hidden-dim 128 --sent-encoder-layers 1 --stock-encoder-layers 1 
+python main.py --mode 2 --hidden-dim 128 --sent-encoder-layers 1 --stock-encoder-layers 1 
+```
+These models are memory intensive as even toy models consume >18GB of GPU memory. We also provide other hyperparameter options including `--num-heads` (number of self-attention heads), `--dropout` (dropout probability for Bi-LSTM layers), and standard optimizer hyperparameters. It is expected that the models will not make meaningful decrease at early epochs as fine-tuning ELMO typically leads to performance degradation at early stages of training.
+
+### How to evaluate the model
+For the current model configuration, the best performing model on the validation set will be stored in `checkpoint/ckpt.pth`. For evaluation, simply execute
+```
+python main.py [your last model configuration] --evaluate
+```
+For example, for the first model trained in the snippet provided above, we run
+```
+python main.py --mode 0 --hidden-dim 128 --sent-encoder-layers 1 --stock-encoder-layers 1 --evaluate
+```
+to perform evluation on the validation set. 
