@@ -20,16 +20,18 @@ This report is divided into the following parts:
 1. Data and Data Processing
    1. Data 
    2. Data Processing
-3. Methodologies and Model Overview 
+2. Methodologies and Model Overview 
    1. Event extraction
    2. Models
       1. SSPM
       2. MSSPM
-4. Reproducibility
+3. Reproducibility
    1. Prerequisites
    2. Building dataset 
    3. How to train the model
    4. How to evaluate the model
+4. Validation Accuracy
+5. References
 
 ## Data and Data Processing 
 
