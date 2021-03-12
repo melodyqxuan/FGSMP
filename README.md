@@ -21,9 +21,15 @@ One example regarding the different representation of the news text is given bel
 
 This 'tutorial'/intro is divided into the following parts:
 1. Data and Data Processing
-2. Methodologies and Model Overview 
-3. How to train the model
-4. How to evaluate the model
+   1. Data 
+   2. Data Processing
+3. Methodologies and Model Overview 
+   1. Event extraction
+   2. Models
+      1. SSPM
+      2. MSSPM
+5. How to train the model
+6. How to evaluate the model
 
 
 
@@ -59,7 +65,7 @@ THe authors proposed automatic event extraction processing using a predefined di
 
 The event extraction can be summarized into 4 steps: 1) Extracting the POS tagging and dependency relation from the news using NLP tools 2) Filter event candidates using the trigger words from TFED 3) Matching the POS tagging and dependency relation to locate event roles 4) Assigning event role labels using BIO tagging.
 
-Since we have no access to the auxilliary information to the TFED, we naively looked at the POS tagging in our experiments and allow the users to choose whether to include the event labels as an input to the model. 
+Since we have no access to the auxilliary information to the TFED, we naively employ the POS tagging as event labels in our experiments and allow the users to choose whether to include the event labels as an input to the model (by setting blah blah; maybe show the code below). 
 
 ### Models
 
