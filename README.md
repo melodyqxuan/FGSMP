@@ -61,7 +61,7 @@ Since we have no access to the auxilliary information to the TFED, we naively em
 
 ### Models
 
-We primarily implement two models, namely **S**tructured **S**tock **P**rediction **M**odel (SSPM) and **M**ulti-task SSPM, that predicts a binary stock movement label based on historical trading data, news report, and event labels. We briefly re-introduce the mathematical construction of the models below. 
+We primarily implement two models, namely **S**tructured **S**tock **P**rediction **M**odel (SSPM) and **M**ulti-task SSPM, that predicts a binary stock movement label based on historical trading data, news report, and event labels. We briefly introduce the mathematical construction of the models below. 
 
 #### SSPM
 
@@ -167,3 +167,7 @@ For example, for the first model trained in the snippet provided above, we run
 python main.py --mode 0 --hidden-dim 128 --sent-encoder-layers 1 --stock-encoder-layers 1 --evaluate
 ```
 to perform evluation on the validation set. 
+
+
+## Example output for validation accuracy(%)
+`MSSPM: mode 0: 54.21%, mode 1: 51.78%, mode 2: 53.65% `
