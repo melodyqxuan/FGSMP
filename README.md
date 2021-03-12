@@ -80,7 +80,7 @@ The input data is a set of `N` tuples `{(x_i, y_i, e_i, s_i)}` for `1 <= i <= N`
 The SSPM model first procure variable-length representations for stock and news respectively via a stack of `Bi-LSTM` layers, followed by `Self-Attn` computed over the hidden representations produced by `Bi-LSTM`.
 ```
 S_x = Self-Attn(Bi-LSTM(Embedding(x)))
-S_y = Self-Attn(Bi-LSTM(y))
+S_y = Self-Attn(Bi-LSTM(E_y))
 ```
 The event labels are processed through a separate embedding layer:
 ```
