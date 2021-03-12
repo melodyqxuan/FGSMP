@@ -169,5 +169,10 @@ python main.py --mode 0 --hidden-dim 128 --sent-encoder-layers 1 --stock-encoder
 to perform evluation on the validation set. 
 
 
-## Example output for validation accuracy(%)
-`MSSPM: mode 0: 54.21%, mode 1: 51.78%, mode 2: 53.65% `
+## Validation accuracy(%)
+
+Model Mode | Validation Acc(%)
+------------ | -------------
+mode 0 | 54.21%
+mode 1 | 51.78%
+mode 2 | 53.65%
