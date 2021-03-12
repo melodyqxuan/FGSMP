@@ -14,7 +14,8 @@ learn a better representation for the texts --- fine-grained events.
 
 One example regarding the different representation of the news text is given below. 
 
-**INSERT THE EVENTS PIC HERE**
+
+<img src = '/src/events_structure.png' width="400">
 
 
 
@@ -28,8 +29,11 @@ This 'tutorial'/intro is divided into the following parts:
    2. Models
       1. SSPM
       2. MSSPM
-5. How to train the model
-6. How to evaluate the model
+4. Reproducibility
+   1. Prerequisites
+   2. Building dataset 
+   3. How to train the model
+   4. How to evaluate the model
 
 
 
@@ -73,7 +77,8 @@ We primarily implement two models, namely **S**tructured **S**tock **P**redictio
 
 #### SSPM
 
-**INSERTS SSPM OVERVIEW PIC**
+
+<img src = '/src/SSPM.png' width="800">
 
 The input data is a set of `N` tuples `{(x_i, y_i, e_i, s_i)}` for `1 <= i <= N`, where `x_i` is the news report sequence, `y_i` the stock trading history,`e_i` the event labels associated with the news report `x_i`, and `s_i` the binary stock movement label. The construction of `e_i` is analogous to that of POS tags, meaning that the sequence length of `e_i` is identical to that of `x_i`. We omit data indices for the rest of this section for clarity.
 
@@ -116,7 +121,7 @@ At test time, our model simply takes a test tuple `(x, y, e)` and predicts the m
 
 #### MSSPM
 
-**INSERTS MSSPM OVERVIEW PIC**
+<img src = '/src/MSSPM.png' width="800">
 
 The MSSPM model is very similar to SSPM in its processing of news sequence and stock history inputs, and differs in its treatment of the event labels.
 At training time, the MSSPM first procures the news representation
