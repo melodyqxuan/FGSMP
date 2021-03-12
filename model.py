@@ -301,12 +301,10 @@ class MSSPM(nn.Module):
         if self.gpu: character_ids = character_ids.cuda()
         elmo_out = self.sent_embed(character_ids)
         elmo_emb = elmo_out['elmo_representations'][0]
-        print('elmo passed')
         # need to negate sent_mask in order to input correct boolean values for key_padding_mask
         sent_mask = ~elmo_out['mask']
         sent_out = self.sent_encoder(elmo_emb, sent_lens)
         sent_out, _ = self.sent_attn(sent_out, sent_out, sent_out, key_padding_mask = sent_mask)
-        print('sent self attention passed')
 
         if self.mode >= 1:
             if self.mode == 2:
@@ -314,14 +312,12 @@ class MSSPM(nn.Module):
                 out['loss_crf'] = loss_crf
             event_out = self.event_encoder(event.t())
             sent_out = self.fuse(sent_out, event_out)
-        print('event passed')
 
         if self.gpu:
             stock = stock.cuda()
         stock_mask = self.compute_mask(stock, stock_lens)
         stock_out = self.stock_encoder(stock, stock_lens)
         stock_out, _ = self.stock_attn(stock_out, stock_out, stock_out, key_padding_mask = stock_mask)
-        print('stock passed')
 
         sent_out = sent_out.transpose(0, 1).contiguous()
         stock_out = stock_out.transpose(0, 1).contiguous()
