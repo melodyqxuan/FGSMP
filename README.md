@@ -12,6 +12,12 @@ tasks. It has been shown that the <S,P,O> outperforms the raw-text approach, ind
 Given the limitations of <S,P,O>, which only extract the same type of limited information regardless of different event types, the authors of this paper propose to 
 learn a better representation for the texts --- fine-grained events. 
 
+One example regarding the different representation of the news text is given below. 
+
+**INSERT THE EVENTS PIC HERE**
+
+
+
 
 This 'tutorial'/intro is divided into the following parts:
 1. Data and Data Processing
@@ -61,6 +67,8 @@ We primarily implement two models, namely **S**tructured **S**tock **P**redictio
 
 #### SSPM
 
+**INSERTS SSPM OVERVIEW PIC**
+
 The input data is a set of `N` tuples `{(x_i, y_i, e_i, s_i)}` for `1 <= i <= N`, where `x_i` is the news report sequence, `y_i` the stock trading history,`e_i` the event labels associated with the news report `x_i`, and `s_i` the binary stock movement label. The construction of `e_i` is analogous to that of POS tags, meaning that the sequence length of `e_i` is identical to that of `x_i`. We omit data indices for the rest of this section for clarity.
 
 The SSPM model first procure variable-length representations for stock and news respectively via a stack of `Bi-LSTM` layers, followed by `Self-Attn` computed over the hidden representations produced by `Bi-LSTM`.
@@ -101,6 +109,8 @@ L_BCE = BCE(p, s)
 At test time, our model simply takes a test tuple `(x, y, e)` and predicts the movement probability `s`.
 
 #### MSSPM
+
+**INSERTS MSSPM OVERVIEW PIC**
 
 The MSSPM model is very similar to SSPM in its processing of news sequence and stock history inputs, and differs in its treatment of the event labels.
 At training time, the MSSPM first procures the news representation
