@@ -49,11 +49,17 @@ The methods proposed by this paper include two main components: 1) Fine-grained 
 
 ### Event Extraction 
 
+THe authors proposed automatic event extraction processing using a predefined dictionary TFED designed by domain experts for stock-related financial events. The dictionary includes 32 event types and the corresponding trigger words and event roles, which are publicly available. The dictionary also include the POS label of the event roles, and the dependency relation between the event types and the necessary/unnecessary label of event roles. Unfortunately, this piece of auxilliary information cannot be accessed. 
 
+The event extraction can be summarized into 4 steps: 1) Extracting the POS tagging and dependency relation from the news using NLP tools 2) Filter event candidates using the trigger words from TFED 3) Matching the POS tagging and dependency relation to locate event roles 4) Assigning event role labels using BIO tagging.
+
+Since we have no access to the auxilliary information to the TFED, we naively looked at the POS tagging in our experiments and allow the users to choose whether to include the event labels as an input to the model. 
+
+### Models
 
 We primarily implement two models, namely **S**tructured **S**tock **P**rediction **M**odel (SSPM) and **M**ulti-task SSPM, that predicts a binary stock movement label based on historical trading data, news report, and event labels. We briefly introduce the mathematical construction of the models below. 
 
-### SSPM
+#### SSPM
 
 The input data is a set of `N` tuples `{(x_i, y_i, e_i, s_i)}` for `1 <= i <= N`, where `x_i` is the news report sequence, `y_i` the stock trading history,`e_i` the event labels associated with the news report `x_i`, and `s_i` the binary stock movement label. The construction of `e_i` is analogous to that of POS tags, meaning that the sequence length of `e_i` is identical to that of `x_i`. We omit data indices for the rest of this section for clarity.
 
@@ -94,7 +100,7 @@ L_BCE = BCE(p, s)
 ```
 At test time, our model simply takes a test tuple `(x, y, e)` and predicts the movement probability `s`.
 
-### MSSPM
+#### MSSPM
 
 The MSSPM model is very similar to SSPM in its processing of news sequence and stock history inputs, and differs in its treatment of the event labels.
 At training time, the MSSPM first procures the news representation
